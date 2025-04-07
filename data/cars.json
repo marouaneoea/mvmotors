@@ -1,0 +1,32 @@
+{
+  "id": 1,
+  "name": "2018 VW Passat Variant Highline 1.6 TDI Diesel 120 PK DSG",
+  "price": 11950,
+  "image": [
+    "public/images/passat2018/passat1.png",
+    "public/images/passat2018/passat2.png",
+    "public/images/passat2018/passat3.png",
+    "public/images/passat2018/passat4.png",
+    "public/images/passat2018/passat5.png",
+    "public/images/passat2018/passat6.png",
+    "public/images/passat2018/passat7.png",
+    "public/images/passat2018/passat8.png",
+    "public/images/passat2018/passat9.png",
+    "public/images/passat2018/passat10.png",
+    "public/images/passat2018/passat11.png",
+    "public/images/passat2018/passat12.png",
+    "public/images/passat2018/passat13.png",
+    "public/images/passat2018/passat14.png",
+    "public/images/passat2018/passat15.png",
+    "public/images/passat2018/passat16.png",
+    "public/images/passat2018/passat17.png",
+    "public/images/passat2018/passat18.png",
+    "public/images/passat2018/passat19.png"
+  ],
+  "description": "2018 VW Passat Variant Highline, 1.6 TDI Diesel 120 PK DSG. Luxe uitvoering met automaat en krachtige dieselmotor.",
+  "buildyear": "2018-01-01T00:00:00.000Z",
+  "kmstand": 164000,
+  "fuel": "Diesel",
+  "transmission": "Automaat",
+  "carroserie": "Stationwagon"
+}
