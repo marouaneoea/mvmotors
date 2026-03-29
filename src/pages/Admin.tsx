@@ -7,12 +7,14 @@ import { Wagens } from '../admin/Wagens'
 import { Facturen } from '../admin/Facturen'
 import { Abonnees } from '../admin/Abonnees'
 import { Statistieken } from '../admin/Statistieken'
+import { AdminReviews } from '../admin/Reviews'
 
 const NAV = [
   { id: 'overzicht', label: 'Overzicht' },
   { id: 'wagens',    label: 'Wagens' },
   { id: 'facturen',  label: 'Facturen' },
   { id: 'abonnees',  label: 'Abonnees' },
+  { id: 'reviews',   label: 'Reviews' },
   { id: 'stats',     label: 'Statistieken' },
 ] as const
 
@@ -131,6 +133,7 @@ export function Admin() {
           {section === 'wagens'     && <Wagens cars={cars} />}
           {section === 'facturen'   && <Facturen cars={cars} />}
           {section === 'abonnees'   && <Abonnees subscribers={subscribers} />}
+          {section === 'reviews'    && <AdminReviews />}
           {section === 'stats'      && <Statistieken clicks={clicks} />}
         </div>
       </main>

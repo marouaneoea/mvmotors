@@ -296,10 +296,89 @@ async function scrapeAndSync() {
   }
 }
 
+async function scrapeReviews() {
+  // Try the feedback subpage first, fall back to profile root
+  const urls = [
+    'https://www.2dehands.be/u/mv-motors/35556286/feedback/',
+    'https://www.2dehands.be/u/mv-motors/35556286/reviews/',
+    'https://www.2dehands.be/u/mv-motors/35556286/',
+  ];
+
+  let pageProps = {};
+  for (const url of urls) {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'text/html',
+      }
+    });
+    const html = await res.text();
+    const $ = load(html);
+    const nextDataScript = $('#__NEXT_DATA__').html();
+    if (!nextDataScript) continue;
+    const nextData = JSON.parse(nextDataScript);
+    pageProps = nextData.props?.pageProps || {};
+    // Stop if this page has feedback data
+    const hasFeedback =
+      pageProps.sellerProfile?.feedback?.feedbackItems?.length ||
+      pageProps.profile?.feedback?.feedbackItems?.length ||
+      pageProps.feedbackItems?.length ||
+      pageProps.feedback?.feedbackItems?.length ||
+      pageProps.sellerFeedback?.feedbackItems?.length;
+    if (hasFeedback) break;
+  }
+
+  const rawReviews =
+    pageProps.sellerProfile?.feedback?.feedbackItems ||
+    pageProps.profile?.feedback?.feedbackItems ||
+    pageProps.sellerFeedback?.feedbackItems ||
+    pageProps.feedbackItems ||
+    pageProps.feedback?.feedbackItems ||
+    [];
+
+  if (!rawReviews.length) {
+    console.log('ℹ️  No reviews found in __NEXT_DATA__ — keys:', Object.keys(pageProps));
+    console.log('ℹ️  Full pageProps (first level):', JSON.stringify(pageProps, null, 2).slice(0, 2000));
+    return;
+  }
+
+  const getInitials = name => {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
+  const reviews = rawReviews.map(r => {
+    const name = r.reviewerName || r.name || r.buyerName || 'Anoniem';
+    return {
+      id: String(r.id || r.feedbackId || `${name}-${r.date}`),
+      reviewer_name: name,
+      reviewer_initials: getInitials(name),
+      reviewer_avatar: r.reviewerAvatar || r.avatarUrl || r.imageUrl || null,
+      rating: r.rating || r.score || 0,
+      text: r.text || r.description || r.comment || null,
+      date: r.date || r.createdAt || null,
+      source: '2dehands',
+    };
+  });
+
+  const { error } = await supabase
+    .from('reviews')
+    .upsert(reviews, { onConflict: 'id' });
+
+  if (error) throw error;
+  console.log(`⭐  Synced ${reviews.length} review(s) to Supabase`);
+}
+
 const SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 scrapeAndSync().catch(err => console.error('Initial sync failed:', err));
 setInterval(() => scrapeAndSync().catch(err => console.error('Sync failed:', err)), SYNC_INTERVAL);
+
+scrapeReviews().catch(err => console.error('Initial reviews sync failed:', err));
+setInterval(() => scrapeReviews().catch(err => console.error('Reviews sync failed:', err)), DAY_MS);
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 

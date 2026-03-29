@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Header, Hero, CarListing, Newsletter, About, Contact, Footer } from './components'
+import { Header, Hero, CarListing, Newsletter, About, Reviews, Contact, Footer } from './components'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { Login } from './pages/Login'
 import { Admin } from './pages/Admin'
@@ -13,6 +13,7 @@ function Home() {
       <main>
         <CarListing />
         <Newsletter />
+        <Reviews />
         <About />
         <Contact />
       </main>
